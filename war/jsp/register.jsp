@@ -1,19 +1,22 @@
-<%@page contentType="text/html"%>
-<%@page pageEncoding="UTF-8"%>
-<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
    "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
   <title>Welcome!</title>
 </head>
-<body>
+<body background="http://bigbackground.com/wp-content/uploads/2013/08/plain-light-blue-backgrounds.jpg">
+    <div align='center'>
   <form action="/social/response" method="post">
-  Name : <input type="text" name="uname" /> <br>
-  Email : <input type="text" name="email" /> <br>
-  Password : <input type="password" name="password" /> <br>
-  <input type="submit" value="Register">
+  <br><br><br><br>
+  <font size='20'>
+  Name : <input style=height:25px; type="text" name="uname" /> <br>
+  Email : <input  style=height:25px; type="text" name="email" /> <br>
+  Password : <input style=height:25px; type="password" name="password" /> <br><br>
+  <input type="submit" value="Register" style="width:100px; height:50px;">
   
   </form>
+  </font>
+  </div>
 </body>
 </html>

@@ -1,16 +1,32 @@
-<%@ page language="java" contentType="text/html; charset=windows-1256"
-    pageEncoding="windows-1256"%>
+	
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=windows-1256">
 <title>Insert title here</title>
 </head>
-<body>
-<p> Welcome b2a ya ${it.name} </p>
-<p> This is should be user home page </p>
-<p> Current implemented services "http://fci-swe-apps.appspot.com/rest/RegistrationService --- {requires: uname, email, password}" </p>
-<p> and "http://fci-swe-apps.appspot.com/rest/LoginService --- {requires: uname,  password}" </p>
-<p> you should implement sendFriendRequest service and addFriend service
+<body background="http://bigbackground.com/wp-content/uploads/2013/08/plain-light-blue-backgrounds.jpg">
+    <div align='center'>
+    
+<a href="/social/signout">Logout</a><br>
+
+<font size='10'>
+<br><br><p> Welcome ${it.name} </p> 
+
+<form method="post" action="/social/req">
+<input type="text" name="userto"></input>
+<input type="hidden" name="userfrom" value="${it.name}"></input>
+<input type="submit" value="Add Friend"></input></form>
+<br>
+<form method="post" action="/social/notif">
+<input type="hidden" name="uf" value="${it.name}"></input>
+<input type="submit" value="Show Requests"></input></form>
+<br>
+<form method="post" action="/social/viewfriends">
+<input type="hidden" name="uf" value="${it.name}"></input>
+<input type="submit" value="Show Friends"></input></form>
+<br>
+</font>
+</div>
 </body>
 </html>

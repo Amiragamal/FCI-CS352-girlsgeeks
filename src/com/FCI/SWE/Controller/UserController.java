@@ -47,8 +47,6 @@ import com.google.appengine.api.datastore.Query;
 @Path("/")
 @Produces("text/html")
 public class UserController {
-	
-	
 
 	/**
 	 * Action function to render Signup page, this function will be executed
@@ -76,6 +74,7 @@ public class UserController {
 	@GET
 	@Path("/")
 	public Response index() {
+		System.out.println("here");
 		return Response.ok(new Viewable("/jsp/entryPoint")).build();
 	}
 
@@ -90,6 +89,9 @@ public class UserController {
 	public Response login() {
 		return Response.ok(new Viewable("/jsp/login")).build();
 	}
+	
+	
+
 
 	/**
 	 * Action function to response to signup request, This function will act as
@@ -110,7 +112,7 @@ public class UserController {
 	public String response(@FormParam("uname") String uname,
 			@FormParam("email") String email, @FormParam("password") String pass) {
 		
-		String serviceUrl = "http://localhost:8888/rest/RegistrationService";
+		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/RegistrationService";
 		try {
 			URL url = new URL(serviceUrl);
 			String urlParameters = "uname=" + uname + "&email=" + email
@@ -176,7 +178,7 @@ public class UserController {
 	@Produces("text/html")
 	public Response home(@FormParam("uname") String uname,
 			@FormParam("password") String pass) {
-		String serviceUrl = "http://localhost:8888/rest/LoginService";
+		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/LoginService";
 		try {
 			URL url = new URL(serviceUrl);
 			String urlParameters = "uname=" + uname + "&password=" + pass;
@@ -235,7 +237,7 @@ public class UserController {
 	@Path("/req")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String sendReq(@FormParam("userto") String userto,@FormParam("userfrom") String userfrom){
-		String serviceUrl = "http://localhost:8888/rest/ReqService";
+		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/ReqService";
 		try {
 			URL url = new URL(serviceUrl);
 			String urlParameters = "userto=" + userto + "&userfrom=" + userfrom;
@@ -287,7 +289,7 @@ public class UserController {
    @Path("/notif")
 	@Produces("text/html")
 	public Response viewnotifications(@FormParam("uf") String userfrom){
-		String serviceUrl = "http://localhost:8888/rest/ViewService";
+		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/ViewService";
 		try {
 			URL url = new URL(serviceUrl);
 			String urlParameters = "uf=" + userfrom ;
@@ -342,7 +344,7 @@ public class UserController {
    @Path("/ignore")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String ignorerequest(@FormParam("userfrom") String userfrom){
-		String serviceUrl = "http://localhost:8888/rest/IgnoreService";
+		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/IgnoreService";
 		System.out.println(userfrom+" fel controller");
 		try {
 			URL url = new URL(serviceUrl);
@@ -393,7 +395,7 @@ public class UserController {
    @Path("/accept")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String acceptfriend(@FormParam("userfrom") String userfrom){
-		String serviceUrl = "http://localhost:8888/rest/AcceptService";
+		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/AcceptService";
 		try {
 			URL url = new URL(serviceUrl);
 
@@ -439,6 +441,113 @@ public class UserController {
 	
 	}
 	
-
 	
+   @POST
+   @Path("/friends")
+	@Produces("text/html")
+	public Response viewfriends(@FormParam("uf") String userfrom){
+		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/ViewFriendService";
+		try {
+			URL url = new URL(serviceUrl);
+			String urlParameters = "uf=" + userfrom ;
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setDoOutput(true);
+			connection.setDoInput(true);
+			connection.setInstanceFollowRedirects(false);
+			connection.setRequestMethod("POST");
+			connection.setConnectTimeout(60000);  //60 Seconds
+			connection.setReadTimeout(60000);  //60 Seconds
+			connection.setRequestProperty("Content-Type","application/x-www-form-urlencoded;charset=UTF-8");
+			OutputStreamWriter writer = new OutputStreamWriter(
+					connection.getOutputStream());
+			writer.write(urlParameters);
+			writer.flush();
+			String line, retJson = "";
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					connection.getInputStream()));
+
+			while ((line = reader.readLine()) != null) {
+				retJson += line;
+			}
+			writer.close();
+			reader.close();
+			
+			JSONParser parser = new JSONParser();
+			Object obj = parser.parse(retJson);
+			JSONObject object = (JSONObject) obj;
+			Map<String, String> map = new HashMap<String, String>();
+			int noffrnds=Integer.parseInt( object.get("nof").toString());
+			System.out.println("number of friends is :"+noffrnds);
+			if(noffrnds==0){map.put("friend0", "<br><h3>You Have No friends :( !</h3>");}
+			else{for(int i=0;i<noffrnds;i++){
+			map.put("friend"+i,object.get("friend"+i).toString());}}
+			return Response.ok(new Viewable("/jsp/friends", map)).build();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+		
+	}
+   
+   @POST
+   @Path("/users")
+	@Produces("text/html")
+	public Response viewusers(@FormParam("userfrom") String userfrom,@FormParam("userto") String userto){
+		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/ViewUsersService";
+		try {
+			URL url = new URL(serviceUrl);
+			String urlParameters = "userfrom=" + userfrom  + "&userto=" + userto;;
+			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+			connection.setDoOutput(true);
+			connection.setDoInput(true);
+			connection.setInstanceFollowRedirects(false);
+			connection.setRequestMethod("POST");
+			connection.setConnectTimeout(60000);  //60 Seconds
+			connection.setReadTimeout(60000);  //60 Seconds
+			connection.setRequestProperty("Content-Type","application/x-www-form-urlencoded;charset=UTF-8");
+			OutputStreamWriter writer = new OutputStreamWriter(
+					connection.getOutputStream());
+			writer.write(urlParameters);
+			writer.flush();
+			String line, retJson = "";
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+					connection.getInputStream()));
+
+			while ((line = reader.readLine()) != null) {
+				retJson += line;
+			}
+			writer.close();
+			reader.close();
+			
+			JSONParser parser = new JSONParser();
+			Object obj = parser.parse(retJson);
+			JSONObject object = (JSONObject) obj;
+			Map<String, String> map = new HashMap<String, String>();
+			int nofusers=Integer.parseInt( object.get("nou").toString());
+			System.out.println("number of users is :"+nofusers);
+			if(nofusers==0){map.put("user0", "<br><h3> No Users With Such Name !</h3>");}
+			else{for(int i=0;i<nofusers;i++){
+			map.put("user"+i,object.get("user"+i).toString());}}
+			return Response.ok(new Viewable("/jsp/search", map)).build();
+		} catch (MalformedURLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+		
+	}
+   
 }

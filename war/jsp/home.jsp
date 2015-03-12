@@ -13,16 +13,16 @@
 <font size='10'>
 <br><br><p> Welcome ${it.name} </p> 
 
-<form method="post" action="/social/req">
+<form method="post" action="/social/users">
 <input type="text" name="userto"></input>
 <input type="hidden" name="userfrom" value="${it.name}"></input>
-<input type="submit" value="Add Friend"></input></form>
+<input type="submit" value="Search For User"></input></form>
 <br>
 <form method="post" action="/social/notif">
 <input type="hidden" name="uf" value="${it.name}"></input>
 <input type="submit" value="Show Requests"></input></form>
 <br>
-<form method="post" action="/social/viewfriends">
+<form method="post" action="/social/friends">
 <input type="hidden" name="uf" value="${it.name}"></input>
 <input type="submit" value="Show Friends"></input></form>
 <br>

@@ -147,4 +147,32 @@ public class Service {
        else{
        object.put("Status","OK");}
 		return object.toString();}
+	
+	
+	@POST
+	@Path("/ViewFriendService")
+	public String viewfriends(@FormParam("uf") String userfrom) {
+		JSONObject object = new JSONObject();
+		List friends = UserEntity.getfriends(userfrom);
+       if(friends.equals(null)){object.put("Status", "Failed");}
+       else{
+    	   for(int i=0;i<friends.size();i++){
+       object.put("friend"+i, friends.get(i));}
+	}
+       object.put("nof", friends.size());
+		return object.toString();}
+	
+	
+	@POST
+	@Path("/ViewUsersService")
+	public String viewusers(@FormParam("userfrom") String userfrom,@FormParam("userto") String userto) {
+		JSONObject object = new JSONObject();
+		List users = UserEntity.viewusers(userfrom,userto);
+       if(users.equals(null)){object.put("Status", "Failed");}
+       else{
+    	   for(int i=0;i<users.size();i++){
+       object.put("user"+i, users.get(i));}
+	}
+       object.put("nou", users.size());
+		return object.toString();}
 }

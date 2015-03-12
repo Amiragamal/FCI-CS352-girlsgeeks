@@ -1,4 +1,4 @@
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        package com.FCI.SWE.Models;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       package com.FCI.SWE.Models;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -207,7 +207,42 @@ public class UserEntity {
 				return "ok";
 				
 			}
-	
+	public static List getfriends(String ufrom){
+		  DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		  Query gaeQuery = new Query("Friends");
+		  List friends = new ArrayList();
+		  PreparedQuery pq = datastore.prepare(gaeQuery);
+        for (Entity entity : pq.asIterable()) {
+			if (entity.getProperty("Username").toString().equals(ufrom)) {
+			
+				String s= entity.getProperty("Friendname").toString();
+				friends.add("<font size='6'> - "+s+"   Is Your Friend !! </font><br>");
 
-		
+			}
+			else if (entity.getProperty("Friendname").toString().equals(ufrom)) {
+			
+				String s= entity.getProperty("Username").toString();
+				friends.add("<font size='6'> - "+s+"   Is Your Friend !! </font><br>");
+
+			}
+			
+        }
+
+				return friends;
+				
+			}
+
+	public static List viewusers(String userfrom,String searchuser){
+		List requests = new ArrayList();
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Query gaeQuery = new Query("users");
+		PreparedQuery pq = datastore.prepare(gaeQuery);
+		for (Entity entity : pq.asIterable()) {
+			if (entity.getProperty("name").toString().contains(searchuser)&& ! entity.getProperty("name").toString().equals(userfrom)) {
+				String s=entity.getProperty("name").toString();
+				requests.add(entity.getProperty("name").toString()+"  "+"<form action='/social/req' method='post'><input type='hidden' value='"+s+"' name='userto'><input type='hidden' value='"+userfrom+"' name='userfrom'><input type='submit' value='Add friend'></form><br>");
+			}
+		}
+		return requests;
+	}
 }

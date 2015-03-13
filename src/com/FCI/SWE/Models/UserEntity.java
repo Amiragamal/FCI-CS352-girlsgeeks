@@ -1,5 +1,7 @@
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        package com.FCI.SWE.Models;
 
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        package com.FCI.SWE.Models;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -137,6 +139,11 @@ public class UserEntity {
 		return true;
 
 	}
+	/**
+	 * This method will be used to save request object in datastore
+	 * 
+	 * @return ok if request is saved correctly or not
+	 */
 	
 	public static String sendReq(String e1,String e2){
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -161,7 +168,11 @@ public class UserEntity {
 				return "no";
 	}
 	
-	
+	/**
+	 * This method will be used to retrieve requests from datastore
+	 * 
+	 * @return list of requests 
+	 */
 	public static List viewrequests(String uname){
 		List requests = new ArrayList();
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
@@ -175,7 +186,11 @@ public class UserEntity {
 		}
 		return requests;
 	}
-	
+	/**
+	 * This method will be used to ignore request and change accepted column in table requests in datastore
+	 * 
+	 * @return ok if user is ignored correctly or not
+	 */
 	public static String ignorereq(String ufrom){
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Query gaeQuery = new Query("requests");
@@ -188,7 +203,12 @@ public class UserEntity {
 		}
 		return "ok";
 	}
-	
+	/**
+	 * This method will be used to accept request and change accepted column in table requests in datastore
+	 * also it will add the friend to frineds table in datastore
+	 * 
+	 * @return ok if user is accepted correctly or not
+	 */
 	public static String acceptReq(String ufrom){
 		  DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		  Query gaeQuery = new Query("requests");
@@ -207,6 +227,11 @@ public class UserEntity {
 				return "ok";
 				
 			}
+	/**
+	 * This method will be used to retrieve friends from table friends in data store
+	 * 
+	 * @return a list of friends
+	 */
 	public static List getfriends(String ufrom){
 		  DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		  Query gaeQuery = new Query("Friends");
@@ -229,9 +254,13 @@ public class UserEntity {
         }
 
 				return friends;
-				
 			}
-
+	
+	/**
+	 * This method will be used to retrieve users from datastore
+	 * 
+	 * @return a list of users 
+	 */
 	public static List viewusers(String userfrom,String searchuser){
 		List requests = new ArrayList();
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();

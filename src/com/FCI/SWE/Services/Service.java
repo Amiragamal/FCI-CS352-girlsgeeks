@@ -99,7 +99,13 @@ public class Service {
 
 		return object.toString();
 	}
-	
+	/**
+	 * req Rest Service, this service will be called to make request process
+	 * also will add the request to requests table indatastore
+	 * @param userto the user ill send the request for
+	 * @param userfrom the current logged in user
+	 * @return a status in json format
+	 */
 	@POST
 	@Path("/ReqService")
 	public String SendReqService(@FormParam("userto") String userto,@FormParam("userfrom") String userfrom) {
@@ -113,6 +119,12 @@ public class Service {
 		return object.toString();
 		
 	}
+	/**
+	 * View Rest Service, this service will be called to view request process
+	 * also will retrieve the requests from datastore
+	 * @param userfrom the current logged in user
+	 * @return requests in json format
+	 */
 	
 	@POST
 	@Path("/ViewService")
@@ -127,6 +139,12 @@ public class Service {
        object.put("nor", request.size());
 		return object.toString();}
 	
+	/**
+	 * ignore Rest Service, this service will be called to ignore request process
+	 * also will change the requests accepted column to ignore in datastore
+	 * @param userfrom the current logged in user
+	 * @return status in json format
+	 */
 	@POST
 	@Path("/IgnoreService")
 	public String ignorerequest(@FormParam("userfrom") String userfrom) {
@@ -137,7 +155,12 @@ public class Service {
        object.put("Status","OK");}
 	
 		return object.toString();}
-	
+	/**
+	 * accept Rest Service, this service will be called to accpet request process
+	 * also will add friend to friends table in datastore
+	 * @param userfrom the current logged in user
+	 * @return status in json format
+	 */
 	@POST
 	@Path("/AcceptService")
 	public String acceptrequest(@FormParam("userfrom") String userfrom) {
@@ -148,7 +171,12 @@ public class Service {
        object.put("Status","OK");}
 		return object.toString();}
 	
-	
+	/**
+	 * Viewfriend Rest Service, this service will be called to view friends  process
+	 * also will retrieve friends from datastore
+	 * @param userfrom the current logged in user
+	 * @return friends in json format
+	 */
 	@POST
 	@Path("/ViewFriendService")
 	public String viewfriends(@FormParam("uf") String userfrom) {
@@ -161,7 +189,15 @@ public class Service {
 	}
        object.put("nof", friends.size());
 		return object.toString();}
-	
+
+	/**
+	 * Viewusers Rest Service, this service will be called to view users  process
+	 * also will retrieve the users from datastore
+	 * @param userfrom the current logged in user
+	 * 	 * @param userto the user im searching for
+
+	 * @return users in json format
+	 */
 	
 	@POST
 	@Path("/ViewUsersService")

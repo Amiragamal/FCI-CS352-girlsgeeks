@@ -273,5 +273,65 @@ public class UserEntity {
 			}
 		}
 		return requests;
+
+public static String sendMsg(String e1,String e2){
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Query gaeQuery = new Query("messages");
+		boolean found=true;
+		PreparedQuery pq = datastore.prepare(gaeQuery);
+		List<Entity> list = pq.asList(FetchOptions.Builder.withDefaults());
+		Query gaeQuery2 = new Query("users");
+		PreparedQuery pq2 = datastore.prepare(gaeQuery2);
+		for (Entity entity : pq2.asIterable()) {	
+			if (entity.getProperty("name").equals(e2)) {found=true;break;}
+			else{found=false;}
+		}
+			if(found==true)
+		{
+		Entity employee = new Entity("messages", list.size() + 1);
+		employee.setProperty("Userfrom", e1);
+		employee.setProperty("UserTo", e2);
+		employee.setProperty("read", "not");
+		datastore.put(employee); 
+		   return "ok";
+		   }
+		else 
+		  return "no";
 	}
+	
+	
+	
+	public static List viewmsgs(String uname){
+		List messages = new ArrayList();
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Query gaeQuery = new Query("messages");
+		PreparedQuery pq = datastore.prepare(gaeQuery);
+		for (Entity entity : pq.asIterable()) {
+			if (entity.getProperty("UserTo").toString().equals(uname) && entity.getProperty("read").toString().equals("not")) {
+				String s=entity.getProperty("Userfrom").toString();
+				messages.add(entity.getProperty("Userfrom").toString()+"  "+"sent message to you <form action='/social/read' method='post'><input type='hidden' value='"+s+"' name='userfrom'><input type='submit' value='read message'></form><br>");
+			}
+		}
+		return messages;
+	}
+	
+	public static String readmsg(String ufrom){
+		  DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		  Query gaeQuery = new Query("messages");
+		  PreparedQuery pq = datastore.prepare(gaeQuery);
+        List<Entity> list = pq.asList(FetchOptions.Builder.withDefaults());
+        for (Entity entity : pq.asIterable()) {
+			if (entity.getProperty("Userfrom").toString().equals(ufrom)) {
+        entity.setProperty("read","yes");
+        datastore.put(entity);
+        Entity message = new Entity("inbox", list.size() + 1);
+        message.setProperty("Username", entity.getProperty("UserTo").toString());
+        message.setProperty("Friendname", entity.getProperty("Userfrom").toString());
+			datastore.put(message); }
+			 }
+
+				return "ok";
+				
+			}
+		}
 }

@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
+    
+    <%@ taglib uri="http://java.sun.com/jsp/jstl/core"   prefix="c" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -9,10 +11,24 @@
 <body background="http://bigbackground.com/wp-content/uploads/2013/08/plain-light-blue-backgrounds.jpg">
     <div align='center'>
 <h1>Users With The Name You Entered : </h1><br>
-
-${it.user0}
-${it.user1}
-${it.user2}
+<c:forEach items="${it.userlist}" var="item" >
+<c:forEach items="${it.currentuser}" var="user">
+   <c:out value="${item}"/><p>
+   <form action='/social/req' method='post'>
+   <input type='hidden' value="${item}" name='userto'>
+   <input type='hidden' value="${user}" name='userfrom'>
+   <input type='submit' value='Add friend'>
+   </form><br>
+      <form action='/social/msgpage' method='post'>
+   <input type='hidden' value="${item}" name='userto'>
+   <input type='hidden' value="${user}" name='userfrom'>
+   <input type='submit' value='Send Message'>
+   </form><br>
+   
+  <br>
+</c:forEach>
+</c:forEach>
 </div>
+
 </body>
 </html>

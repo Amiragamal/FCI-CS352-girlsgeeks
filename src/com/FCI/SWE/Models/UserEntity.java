@@ -1,10 +1,11 @@
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       package com.FCI.SWE.Models;
-
                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         package com.FCI.SWE.Models;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Vector;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -29,7 +30,7 @@ import com.google.appengine.api.datastore.Query;
  * @since 2014-02-12
  */
 public class UserEntity {
-	private String name;
+	private static String name;
 	private String email;
 	private String password;
 
@@ -50,7 +51,7 @@ public class UserEntity {
 
 	}
 
-	public String getName() {
+	public static String getName() {
 		return name;
 	}
 
@@ -261,57 +262,198 @@ public class UserEntity {
 	 * 
 	 * @return a list of users 
 	 */
-	public static List viewusers(String userfrom,String searchuser){
-		List requests = new ArrayList();
+	public static Vector viewusers(String userfrom,String searchuser){
+		Vector requests = new Vector();
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Query gaeQuery = new Query("users");
 		PreparedQuery pq = datastore.prepare(gaeQuery);
 		for (Entity entity : pq.asIterable()) {
 			if (entity.getProperty("name").toString().contains(searchuser)&& ! entity.getProperty("name").toString().equals(userfrom)) {
 				String s=entity.getProperty("name").toString();
-				requests.add(entity.getProperty("name").toString()+"  "+"<form action='/social/req' method='post'><input type='hidden' value='"+s+"' name='userto'><input type='hidden' value='"+userfrom+"' name='userfrom'><input type='submit' value='Add friend'></form><br>");
+				requests.add(entity.getProperty("name").toString());
 			}
 		}
 		return requests;
+	}
 
-	//send 1 to 1 message
-
-public static String sendMsg(String e1,String e2){
+	public static String sendgrpmsg(String usersto, String convname,String msgbody,String userfrom) {
+		
+		String[] users =usersto.split(",");
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
-		Query gaeQuery = new Query("messages");
-		boolean found=true;
+		Query gaeQuery = new Query("convmembers");
 		PreparedQuery pq = datastore.prepare(gaeQuery);
 		List<Entity> list = pq.asList(FetchOptions.Builder.withDefaults());
-		Query gaeQuery2 = new Query("users");
-		PreparedQuery pq2 = datastore.prepare(gaeQuery2);
-		for (Entity entity : pq2.asIterable()) {	
-			if (entity.getProperty("name").equals(e2)) {found=true;break;}
-			else{found=false;}
+		Entity members = new Entity("convmembers", list.size() + 1);
+		members.setProperty("membername", userfrom);
+		members.setProperty("convname", convname);
+        datastore.put(members);
+        
+       
+		for(int i=0;i<users.length;i++){
+
+			DatastoreService datastore2 = DatastoreServiceFactory.getDatastoreService();
+			Query gaeQuery2 = new Query("convmembers");
+			PreparedQuery pq2 = datastore2.prepare(gaeQuery2);
+			List<Entity> list2 = pq2.asList(FetchOptions.Builder.withDefaults());
+			Entity members2 =new Entity("convmembers", list2.size() + 1);
+			members2.setProperty("membername", users[i]);
+            members2.setProperty("convname", convname);
+			datastore2.put(members2);
+          }
+
+		DatastoreService datastore3 = DatastoreServiceFactory.getDatastoreService();
+		Query gaeQuery3 = new Query("convmessages");
+		PreparedQuery pq3 = datastore3.prepare(gaeQuery3);
+		List<Entity> list3 = pq3.asList(FetchOptions.Builder.withDefaults());
+		Entity members3 = new Entity("convmessages", list3.size() + 1);
+		members3.setProperty("messagecontent", msgbody);
+		members3.setProperty("seen","ny");
+		members3.setProperty("convname", convname);
+		members3.setProperty("userfrom", userfrom);
+
+        datastore3.put(members3);
+		
+				return "ok";	
+			}
+
+	public static List showgrp(String currentuser) {
+		
+		Vector grp = new Vector();
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Query gaeQuery = new Query("convmembers");
+		PreparedQuery pq = datastore.prepare(gaeQuery);
+		for (Entity entity : pq.asIterable()) {
+			if (entity.getProperty("membername").toString().contains(currentuser) ) {
+				grp.add(entity.getProperty("convname").toString());
+			}
 		}
-			if(found==true)
-		{
+		return grp;
+	
+	}
+
+	public static Map showconv(String convname) {
+		
+        Vector msgs =new Vector();
+        Vector users =new Vector();
+        Vector userfrom = new Vector();
+
+		Map<String,Vector> conv = new HashMap<String,Vector>();
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Query gaeQuery = new Query("convmembers");
+		PreparedQuery pq = datastore.prepare(gaeQuery);
+		for (Entity entity : pq.asIterable()) {
+			if (entity.getProperty("convname").toString().contains(convname) ) {
+				users.add(entity.getProperty("membername").toString());
+			}
+		}
+		
+		DatastoreService datastore2 = DatastoreServiceFactory.getDatastoreService();
+		Query gaeQuery2 = new Query("messages");
+		PreparedQuery pq2 = datastore.prepare(gaeQuery2);
+		for (Entity entity2 : pq2.asIterable()) {
+			if (entity2.getProperty("convname").toString().contains(convname) ) {
+				msgs.add(entity2.getProperty("messagecontent").toString());
+                userfrom.add(entity2.getProperty("userfrom").toString());
+			}
+		}
+		conv.put("msgs", msgs);
+		conv.put("members", users);
+		conv.put("sender", userfrom);
+		return conv;
+	}
+
+	public static String replygrp(String msgbody, String convname,String userfrom) {
+		DatastoreService datastore3 = DatastoreServiceFactory.getDatastoreService();
+		Query gaeQuery3 = new Query("convmessages");
+		PreparedQuery pq3 = datastore3.prepare(gaeQuery3);
+		List<Entity> list3 = pq3.asList(FetchOptions.Builder.withDefaults());
+		Entity members3 = new Entity("convmessages", list3.size() + 1);
+		members3.setProperty("messagecontent", msgbody);
+		members3.setProperty("seen", "ny");
+		members3.setProperty("convname", convname);
+		members3.setProperty("userfrom", userfrom);
+        datastore3.put(members3);
+
+				return "ok";	
+	}
+	public static Map viewnotificications(String currentuser){
+		
+
+        Vector reqs =new Vector();
+        Vector msgs =new Vector();
+        Vector grpmsgs = new Vector();
+        String S;
+
+		Map<String,Vector> notif = new HashMap<String,Vector>();
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Query gaeQuery = new Query("requests");
+		PreparedQuery pq = datastore.prepare(gaeQuery);
+		for (Entity entity : pq.asIterable()) {
+			if (entity.getProperty("UserTo").toString().equals(currentuser) && entity.getProperty("Accepted").toString().equals("ny")) {
+				reqs.add(entity.getProperty("Userfrom").toString());
+			}
+		}
+		DatastoreService datastore2 = DatastoreServiceFactory.getDatastoreService();
+		Query gaeQuery2 = new Query("convmembers");
+		PreparedQuery pq2 = datastore2.prepare(gaeQuery2);
+		for (Entity entity2 : pq2.asIterable()) {
+			if (entity2.getProperty("membername").toString().equals(currentuser) ) {
+				S=entity2.getProperty("convname").toString();
+				DatastoreService datastore3 = DatastoreServiceFactory.getDatastoreService();
+				Query gaeQuery3 = new Query("convmessages");
+				PreparedQuery pq3 = datastore3.prepare(gaeQuery3);
+				for (Entity entity3 : pq3.asIterable()) {
+					if (entity3.getProperty("convname").toString().equals(S) && entity3.getProperty("seen").toString().equals("ny")) {
+						grpmsgs.add(entity3.getProperty("convname").toString());
+					}
+
+				
+			}
+		}
+		
+		}
+		
+		DatastoreService datastore3 = DatastoreServiceFactory.getDatastoreService();
+		Query gaeQuery3 = new Query("messages");
+		PreparedQuery pq3 = datastore3.prepare(gaeQuery3);
+		for (Entity entity3 : pq3.asIterable()) {
+			if (entity3.getProperty("UserTo").toString().equals(currentuser) && entity3.getProperty("read").toString().equals("not")) {
+				msgs.add(entity3.getProperty("Userfrom").toString());
+				
+			}
+		}
+		notif.put("reqs", reqs);
+		notif.put("grpmsgs", grpmsgs);
+		notif.put("msgs",msgs);
+		return notif;
+	}
+
+	public static String sendMsg(String userfrom,String userto,String msgbody){
+		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
+		Query gaeQuery = new Query("messages");
+		PreparedQuery pq = datastore.prepare(gaeQuery);
+		List<Entity> list = pq.asList(FetchOptions.Builder.withDefaults());
+			
 		Entity employee = new Entity("messages", list.size() + 1);
-		employee.setProperty("Userfrom", e1);
-		employee.setProperty("UserTo", e2);
+		employee.setProperty("Userfrom", userfrom);
+		employee.setProperty("UserTo", userto);
+		employee.setProperty("msgcontent", msgbody);
 		employee.setProperty("read", "not");
 		datastore.put(employee); 
 		   return "ok";
-		   }
-		else 
-		  return "no";
+		   
 	}
 	
-	
-	
 	public static List viewmsgs(String uname){
-		List messages = new ArrayList();
+		Vector messages = new Vector();
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Query gaeQuery = new Query("messages");
 		PreparedQuery pq = datastore.prepare(gaeQuery);
 		for (Entity entity : pq.asIterable()) {
 			if (entity.getProperty("UserTo").toString().equals(uname) && entity.getProperty("read").toString().equals("not")) {
 				String s=entity.getProperty("Userfrom").toString();
-				messages.add(entity.getProperty("Userfrom").toString()+"  "+"sent message to you <form action='/social/read' method='post'><input type='hidden' value='"+s+"' name='userfrom'><input type='submit' value='read message'></form><br>");
+				messages.add(entity.getProperty("Userfrom").toString());
+				
 			}
 		}
 		return messages;
@@ -320,20 +462,24 @@ public static String sendMsg(String e1,String e2){
 	public static String readmsg(String ufrom){
 		  DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		  Query gaeQuery = new Query("messages");
+		  String S="";
 		  PreparedQuery pq = datastore.prepare(gaeQuery);
         List<Entity> list = pq.asList(FetchOptions.Builder.withDefaults());
         for (Entity entity : pq.asIterable()) {
 			if (entity.getProperty("Userfrom").toString().equals(ufrom)) {
+				S= entity.getProperty("msgcontent").toString();
         entity.setProperty("read","yes");
-        datastore.put(entity);
-        Entity message = new Entity("inbox", list.size() + 1);
-        message.setProperty("Username", entity.getProperty("UserTo").toString());
-        message.setProperty("Friendname", entity.getProperty("Userfrom").toString());
-			datastore.put(message); }
+        datastore.put(entity);}
+			
+       
 			 }
-
-				return "ok";
+				return S;
 				
 			}
-		}
+	
+		
+
+		
+
+
 }

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -28,6 +29,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.FCI.SWE.Models.UserEntity;
+import com.google.appengine.labs.repackaged.org.json.JSONArray;
 
 /**
  * This class contains REST services, also contains action function for web
@@ -211,4 +213,142 @@ public class Service {
 	}
        object.put("nou", users.size());
 		return object.toString();}
+
+	@POST
+	@Path("/SendgroupService")
+	public String SendgroupService(@FormParam("to") String usersto,@FormParam("convname") String convname,@FormParam("msgbody") String msgbody) {
+		JSONObject object = new JSONObject();
+		String userfrom=UserEntity.getName();
+		String accept=UserEntity.sendgrpmsg(usersto,convname,msgbody, userfrom);
+       if(accept.equals("ok")){object.put("Status", "OK");}
+       else{
+       object.put("Status","failed");}
+		return object.toString();}
+
+	@POST
+	@Path("/ShowgroupService")
+	public String showgroup() {
+		JSONObject object = new JSONObject();
+        String currentuser=UserEntity.getName();
+		List grpmsgs = UserEntity.showgrp(currentuser);
+       if(grpmsgs.equals(null)){object.put("Status", "Failed");}
+       else{
+    	   for(int i=0;i<grpmsgs.size();i++){
+       object.put("grps"+i, grpmsgs.get(i));}
+	}
+       object.put("nog", grpmsgs.size());
+		return object.toString();}
+	@POST
+	@Path("/ShowconvService")
+	public String ShowconvService(@FormParam("convname") String convname) {
+		JSONObject object = new JSONObject();
+        String currentuser=UserEntity.getName();
+		Map <String,Vector> conv = new HashMap<String,Vector>();
+		conv = UserEntity.showconv(convname);
+		Vector msgs =new Vector();
+		msgs= conv.get("msgs");
+		    	   
+		object.put("nom", msgs.size());
+		Vector members =new Vector();
+		members= conv.get("members");
+		object.put("nomem", members.size());
+		Vector sender =new Vector();
+		sender= conv.get("sender");
+		object.put("nos", sender.size());
+       if(conv.equals(null)){object.put("Status", "Failed");}
+       else{
+    	   for(int i=0;i<msgs.size();i++){
+       object.put("msg"+i, msgs.get(i));}
+    	   
+    	   for(int i=0;i<members.size();i++){
+    	       object.put("member"+i, members.get(i));}
+    	   for(int i=0;i<sender.size();i++){
+    	       object.put("sender"+i, sender.get(i));}
+	}
+       
+		return object.toString();}
+	@POST
+	@Path("/ReplyService")
+	public String ReplyService(@FormParam("msgbody") String msgbody,@FormParam("convname") String convname) {
+		JSONObject object = new JSONObject();
+        String currentuser=UserEntity.getName();
+	    String msg=UserEntity.replygrp(msgbody,convname,currentuser);
+	    if(msg.equals("ok")){object.put("Status", "OK");}
+	       else{
+	       object.put("Status","failed");}
+			return object.toString();
+			}
+
+	@POST
+	@Path("/ShownotifService")
+	public String ShownotifService() {
+		JSONObject object = new JSONObject();
+        String currentuser=UserEntity.getName();
+		Map <String,Vector> notif = new HashMap<String,Vector>();
+		notif = UserEntity.viewnotificications(currentuser);
+		Vector reqs =new Vector();
+		reqs= notif.get("reqs");
+		object.put("nor", reqs.size());
+		Vector grpmsg =new Vector();
+		grpmsg= notif.get("grpmsgs");
+		object.put("nog", grpmsg.size());
+		Vector msgs =new Vector();
+		msgs= notif.get("msgs");
+		object.put("nom", msgs.size());
+
+       if(notif.equals(null)){object.put("Status", "Failed");}
+       else{
+    	   for(int i=0;i<reqs.size();i++){
+       object.put("req"+i, reqs.get(i));}
+    	   
+    	   for(int i=0;i<grpmsg.size();i++){
+    	       object.put("grp"+i, grpmsg.get(i));}
+    	   for(int i=0;i<msgs.size();i++){
+    	       object.put("msg"+i, msgs.get(i));}
+	}
+	return object.toString();
+
+	}
+	
+	@POST
+	@Path("/SendMsgService")
+	public String SendMsgService(@FormParam("userto") String userto,@FormParam("userfrom") String userfrom,@FormParam("msgbody") String msgbody) {
+		JSONObject object = new JSONObject();
+		String user = UserEntity.sendMsg(userfrom, userto,msgbody);
+       if(user.equals("ok"))
+		object.put("Status", "OK");
+       else 
+    	   object.put("Status","NO");
+       
+		return object.toString();}
+	
+	@POST
+	@Path("/ViewmsgService")
+	public String viewmsgs() {
+		JSONObject object = new JSONObject();
+
+	    String currentuser=UserEntity.getName();
+		List message = UserEntity.viewmsgs(currentuser);
+       if(message.equals(null)){object.put("Status", "Failed");}
+       else{
+    	   for(int i=0;i<message.size();i++){
+       object.put("message"+i, message.get(i));}
+	}
+       object.put("nom", message.size());
+		return object.toString();}
+	
+	
+	
+	@POST
+	@Path("/ReadMsgService")
+	public String readmsg(@FormParam("userfrom") String userfrom) {
+		JSONObject object = new JSONObject();
+		String msg=UserEntity.readmsg(userfrom);
+       if(msg.equals(null)){object.put("Status", "Failed");}
+       else{
+       object.put("msg",msg);}
+		return object.toString();}
+	
+	
+
 }

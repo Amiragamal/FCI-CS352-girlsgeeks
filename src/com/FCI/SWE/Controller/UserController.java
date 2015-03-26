@@ -123,7 +123,7 @@ public class UserController {
 	public String response(@FormParam("uname") String uname,
 			@FormParam("email") String email, @FormParam("password") String pass) {
 		
-		String serviceUrl = "http://localhost:8888/rest/RegistrationService";
+		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/RegistrationService";
 		try {
 			URL url = new URL(serviceUrl);
 			String urlParameters = "uname=" + uname + "&email=" + email
@@ -189,7 +189,7 @@ public class UserController {
 	@Produces("text/html")
 	public Response home(@FormParam("uname") String uname,
 			@FormParam("password") String pass) {
-		String serviceUrl = "http://localhost:8888/rest/LoginService";
+		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/LoginService";
 		try {
 			URL url = new URL(serviceUrl);
 			String urlParameters = "uname=" + uname + "&password=" + pass;
@@ -259,7 +259,7 @@ public class UserController {
 	@Path("/req")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String sendReq(@FormParam("userto") String userto,@FormParam("userfrom") String userfrom){
-		String serviceUrl = "http://localhost:8888/rest/ReqService";
+		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/ReqService";
 		try {
 			URL url = new URL(serviceUrl);
 			String urlParameters = "userto=" + userto + "&userfrom=" + userfrom;
@@ -319,7 +319,7 @@ public class UserController {
    @Path("/request")
 	@Produces("text/html")
 	public Response viewrequests(@FormParam("uf") String userfrom){
-		String serviceUrl = "http://localhost:8888/rest/ViewService";
+		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/ViewService";
 		try {
 			URL url = new URL(serviceUrl);
 			String urlParameters = "uf=" + userfrom ;
@@ -383,7 +383,7 @@ public class UserController {
    @Path("/ignore")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String ignorerequest(@FormParam("userfrom") String userfrom){
-		String serviceUrl = "http://localhost:8888/rest/IgnoreService";
+		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/IgnoreService";
 		System.out.println(userfrom+" fel controller");
 		try {
 			URL url = new URL(serviceUrl);
@@ -442,7 +442,7 @@ public class UserController {
    @Path("/accept")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String acceptfriend(@FormParam("userfrom") String userfrom){
-		String serviceUrl = "http://localhost:8888/rest/AcceptService";
+		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/AcceptService";
 		try {
 			URL url = new URL(serviceUrl);
 
@@ -501,7 +501,7 @@ public class UserController {
    @Path("/friends")
 	@Produces("text/html")
 	public Response viewfriends(@FormParam("uf") String userfrom){
-		String serviceUrl = "http://localhost:8888/rest/ViewFriendService";
+		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/ViewFriendService";
 		try {
 			URL url = new URL(serviceUrl);
 			String urlParameters = "uf=" + userfrom ;
@@ -568,7 +568,7 @@ public class UserController {
 	@Produces("text/html")
 	public Response viewusers(@FormParam("userfrom") String userfrom,@FormParam("userto") String userto) throws JSONException{
 
-		String serviceUrl = "http://localhost:8888/rest/ViewUsersService";
+		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/ViewUsersService";
 		try {
 			URL url = new URL(serviceUrl);
 			String urlParameters = "userfrom=" + userfrom  + "&userto=" + userto;;
@@ -626,7 +626,7 @@ public class UserController {
 	@Path("/sendtogrp")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String groupmsg(@FormParam("to") String usersto,@FormParam("convname") String convname,@FormParam("msgbody") String msgbody) {
-		String serviceUrl = "http://localhost:8888/rest/SendgroupService";
+		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/SendgroupService";
 		try {
 			URL url = new URL(serviceUrl);
 			String u = UserEntity.getName();
@@ -684,7 +684,7 @@ public class UserController {
   	@Path("/showgrp")
   	@Produces("text/html")
   	public Response shhowgroup() {
-  		String serviceUrl = "http://localhost:8888/rest/ShowgroupService";
+  		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/ShowgroupService";
   		try {
   			URL url = new URL(serviceUrl);
   			String u = UserEntity.getName();
@@ -744,7 +744,7 @@ JSONObject object = (JSONObject) obj;
  	@Path("/showconv")
  	@Produces("text/html")
  	public Response shhowconv(@FormParam("convname") String convname) {
- 		String serviceUrl = "http://localhost:8888/rest/ShowconvService";
+ 		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/ShowconvService";
  		try {
  			
 			String urlParameters = "convname=" + convname  ;
@@ -819,7 +819,7 @@ JSONObject object = (JSONObject) obj;
 	@Path("/replygrp")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String replygrp(@FormParam("msgbody") String msgbody,@FormParam("convname") String convname) {
-		String serviceUrl = "http://localhost:8888/rest/ReplyService";
+		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/ReplyService";
 		try {
 			URL url = new URL(serviceUrl);
 			String urlParameters = "msgbody=" + msgbody + "&convname=" + convname;
@@ -872,7 +872,7 @@ JSONObject object = (JSONObject) obj;
 	@Path("/shownotif")
 	@Produces("text/html")
 	public Response shownotif() {
-		String serviceUrl = "http://localhost:8888/rest/ShownotifService";
+		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/ShownotifService";
 		try {
 			
 			URL url = new URL(serviceUrl);
@@ -955,7 +955,7 @@ public Response opnMsgpage(@FormParam("userto") String userto,@FormParam("userfr
 	@Path("/sendmsg")
 	@Produces("text/html")
 public String sndMsg(@FormParam("userto") String userto,@FormParam("userfrom") String userfrom,@FormParam("msgbody") String msgbody){
-	   String serviceUrl = "http://localhost:8888/rest/SendMsgService";
+	   String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/SendMsgService";
 		try {
 			URL url = new URL(serviceUrl);
 			String urlParameters = "userto=" + userto + "&userfrom=" + userfrom+ "&msgbody=" + msgbody;
@@ -1004,7 +1004,7 @@ public String sndMsg(@FormParam("userto") String userto,@FormParam("userfrom") S
    @Path("/viewmsgs")
 	@Produces("text/html")
 	public Response showmsgs(){
-		String serviceUrl = "http://localhost:8888/rest/ViewmsgService";
+		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/ViewmsgService";
 		try {
 			URL url = new URL(serviceUrl);
 
@@ -1058,7 +1058,7 @@ public String sndMsg(@FormParam("userto") String userto,@FormParam("userfrom") S
    @Path("/read")
 	@Produces("text/html")
 	public Response readmsg(@FormParam("userfrom") String userfrom){
-		String serviceUrl = "http://localhost:8888/rest/ReadMsgService";
+		String serviceUrl = "http://1-dot-socialnetwork-31.appspot.com/rest/ReadMsgService";
 		try {
 			URL url = new URL(serviceUrl);
 

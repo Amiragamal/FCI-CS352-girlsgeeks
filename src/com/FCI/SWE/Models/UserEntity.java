@@ -274,6 +274,8 @@ public class UserEntity {
 		}
 		return requests;
 
+	//send 1 to 1 message
+
 public static String sendMsg(String e1,String e2){
 		DatastoreService datastore = DatastoreServiceFactory.getDatastoreService();
 		Query gaeQuery = new Query("messages");

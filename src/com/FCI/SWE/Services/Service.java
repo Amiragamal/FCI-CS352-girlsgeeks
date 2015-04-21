@@ -89,6 +89,7 @@ public class Service {
 			@FormParam("password") String pass) {
 		JSONObject object = new JSONObject();
 		UserEntity user = UserEntity.getUser(uname, pass);
+		List hashtags=UserEntity.trendhashtag();
 		if (user == null) {
 			object.put("Status", "Failed");
 
@@ -97,6 +98,9 @@ public class Service {
 			object.put("name", user.getName());
 			object.put("email", user.getEmail());
 			object.put("password", user.getPass());
+			 for(int i=0;i<hashtags.size();i++){
+			      object.put("hashtag"+i, hashtags.get(i));}
+			      object.put("noh", hashtags.size());
 		} 
 
 		return object.toString();
@@ -349,6 +353,159 @@ public class Service {
        object.put("msg",msg);}
 		return object.toString();}
 	
+	@POST
+	@Path("/PageCreationService")
+	public String pagecreationservice(@FormParam("pname") String pname,
+			@FormParam("ptype") String ptype, @FormParam("pcategory") String pcategory) {
+		String pcreator=UserEntity.getName();
+		String user =UserEntity.savePage(pname,ptype,pcategory,pcreator);
+		JSONObject object = new JSONObject();
+		object.put("Status", "OK");
+		return object.toString();
+	}
 	
+	@POST
+	@Path("/ViewePagesService")
+	public String ViewePagesService() {
+		JSONObject object = new JSONObject();
 
-}
+	    String currentuser=UserEntity.getName();
+		List page = UserEntity.viewpage(currentuser);
+       if(page.equals(null)){object.put("Status", "Failed");}
+       else{
+    	   for(int i=0;i<page.size();i++){
+       object.put("page"+i, page.get(i));}
+	}
+       object.put("nop", page.size());
+		return object.toString();}
+	
+	
+	@POST
+	@Path("/VieweMyPagesService")
+	public String VieweMyPagesService() {
+		JSONObject object = new JSONObject();
+
+	    String currentuser=UserEntity.getName();
+		List page = UserEntity.viewmypages(currentuser);
+       if(page.equals(null)){object.put("Status", "Failed");}
+       else{
+    	   for(int i=0;i<page.size();i++){
+       object.put("page"+i, page.get(i));}
+	}
+       object.put("nop", page.size());
+		return object.toString();}
+	
+	
+	@POST
+	@Path("/HandlePageService")
+	public String HandlePageService(@FormParam("pagename") String pagename) {
+		JSONObject object = new JSONObject();
+		List posts = UserEntity.handlemypage(pagename);
+        object.put("name", posts.get(0));
+        object.put("likes", posts.get(1));
+   	   for(int i=2;i<posts.size();i++){
+      object.put("post"+i, posts.get(i));}
+      object.put("noposts", posts.size());
+		object.put("Status","OK");
+		return object.toString();}
+	
+	
+	@POST
+	@Path("/OpenPageService")
+	public String OpenPageService(@FormParam("pagename") String pagename) {
+		JSONObject object = new JSONObject();
+		String user=UserEntity.getName();
+		List posts = UserEntity.openpage(pagename, user);
+        object.put("name", posts.get(0));
+   	   for(int i=1;i<posts.size();i++){
+      object.put("post"+i, posts.get(i));}
+      object.put("noposts", posts.size());
+		object.put("Status","OK");
+		return object.toString();}
+	@POST
+	@Path("/SavePostService")
+	public String SavePostService(@FormParam("pname") String pname,@FormParam("pagepost") String pagepost,@FormParam("privacy")String privacy) {
+		String pcreator=UserEntity.getName();
+		String user =UserEntity.savepost(pname,pagepost,pcreator,privacy);
+		JSONObject object = new JSONObject();
+		object.put("Status", "OK");
+		return object.toString();
+	}
+	@POST
+	@Path("/LikePageService")
+	public String LikePageService() {
+		String currentuser=UserEntity.getName();
+		String Pagename=UserEntity.getpname();
+		String like =UserEntity.likepage(currentuser,Pagename);
+		JSONObject object = new JSONObject();
+		object.put("Status", "OK");
+		return object.toString();
+	}
+
+	@POST
+	@Path("/HashtagService")
+	public String 	HashtagService(@FormParam("name") String name) {
+		JSONObject object = new JSONObject();
+		List posts = UserEntity.viewhashtag(name);
+        object.put("name", posts.get(0));
+        object.put("nop", posts.get(1));
+   	  for(int i=2;i<posts.size();i++){
+      object.put("post"+i, posts.get(i));}
+      object.put("noposts", posts.size());
+		object.put("Status","OK");
+		return object.toString();}
+
+	@POST
+	@Path("/ViewTimeLineService")
+	public String ViewTimeLineService(@FormParam("name") String name) {
+		JSONObject object = new JSONObject();
+		String uname=UserEntity.getName();
+		List posts = UserEntity.vietimeline(name,uname);
+
+      	   for(int i=0;i<posts.size();i++){
+       object.put("post"+i, posts.get(i));}
+       object.put("noposts", posts.size());
+		object.put("name",name);
+		return object.toString();}
+	
+	@POST
+	@Path("/SaveUserPostService")
+	public String SaveUserPostService(@FormParam("pagepost") String pagepost,@FormParam("privacy") String privacy,@FormParam("user") String user,@FormParam("feeling") String feeling,@FormParam("custom") String custom) {
+		String pcreator=UserEntity.getName();
+		String post =UserEntity.saveuserpost(pcreator,pagepost,privacy,user,feeling,custom);
+		JSONObject object = new JSONObject();
+		object.put("Status", "OK");
+		return object.toString();
+	}
+	
+	
+	@POST
+	@Path("/LikeUserPostService")
+	public String LikeUserPostService(@FormParam("post") String post,@FormParam("timeline") String timeline) {
+		String currentuser=UserEntity.getName();
+		String like =UserEntity.likeuserpost(post,timeline);
+		JSONObject object = new JSONObject();
+		object.put("Status", "OK");
+		return object.toString();
+	}
+	@POST
+	@Path("/LikePagePostService")
+	public String LikePagePostService(@FormParam("post") String post,@FormParam("timeline") String timeline) {
+		String currentuser=UserEntity.getName();
+		String like =UserEntity.likepagepost(post,timeline);
+		JSONObject object = new JSONObject();
+		object.put("Status", "OK");
+		return object.toString();
+	}
+
+	@POST
+	@Path("/ShareUserPostService")
+	public String ShareUserPostService(@FormParam("post") String post,@FormParam("creator") String creator,@FormParam("hashtag") String hashtag,@FormParam("feeling") String feeling) {
+		String currentuser=UserEntity.getName();
+		String post1 =UserEntity.shareuserpost(post,creator,currentuser,hashtag,feeling);
+		JSONObject object = new JSONObject();
+		object.put("Status", "OK");
+		return object.toString();
+	}
+
+

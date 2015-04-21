@@ -24,6 +24,10 @@
    <input type='hidden' value="${user}" name='userfrom'>
    <input type='submit' value='Send Message'>
    </form><br>
+   <form action='/social/viewtimeline' method='post'>
+   <input type='hidden' value="${item}" name='name'>
+   <input type='submit' value='Timeline'>
+   </form><br>
    
   <br>
 </c:forEach>

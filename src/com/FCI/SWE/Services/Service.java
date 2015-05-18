@@ -28,6 +28,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.FCI.SWE.Models.PageEntity;
+import com.FCI.SWE.Models.PostEntity;
 import com.FCI.SWE.Models.UserEntity;
 import com.google.appengine.labs.repackaged.org.json.JSONArray;
 
@@ -89,7 +91,7 @@ public class Service {
 			@FormParam("password") String pass) {
 		JSONObject object = new JSONObject();
 		UserEntity user = UserEntity.getUser(uname, pass);
-		List hashtags=UserEntity.trendhashtag();
+		List hashtags=PostEntity.trendhashtag();
 		if (user == null) {
 			object.put("Status", "Failed");
 
@@ -114,7 +116,7 @@ public class Service {
 	 */
 	@POST
 	@Path("/ReqService")
-	public String SendReqService(@FormParam("userto") String userto,@FormParam("userfrom") String userfrom) {
+	public String sendReqService(@FormParam("userto") String userto,@FormParam("userfrom") String userfrom) {
 		JSONObject object = new JSONObject();
 		String user = UserEntity.sendReq(userfrom, userto);
        if(user.equals("ok"))
@@ -220,7 +222,7 @@ public class Service {
 
 	@POST
 	@Path("/SendgroupService")
-	public String SendgroupService(@FormParam("to") String usersto,@FormParam("convname") String convname,@FormParam("msgbody") String msgbody) {
+	public String sendgroupService(@FormParam("to") String usersto,@FormParam("convname") String convname,@FormParam("msgbody") String msgbody) {
 		JSONObject object = new JSONObject();
 		String userfrom=UserEntity.getName();
 		String accept=UserEntity.sendgrpmsg(usersto,convname,msgbody, userfrom);
@@ -244,7 +246,7 @@ public class Service {
 		return object.toString();}
 	@POST
 	@Path("/ShowconvService")
-	public String ShowconvService(@FormParam("convname") String convname) {
+	public String showconvService(@FormParam("convname") String convname) {
 		JSONObject object = new JSONObject();
         String currentuser=UserEntity.getName();
 		Map <String,Vector> conv = new HashMap<String,Vector>();
@@ -273,7 +275,7 @@ public class Service {
 		return object.toString();}
 	@POST
 	@Path("/ReplyService")
-	public String ReplyService(@FormParam("msgbody") String msgbody,@FormParam("convname") String convname) {
+	public String replyService(@FormParam("msgbody") String msgbody,@FormParam("convname") String convname) {
 		JSONObject object = new JSONObject();
         String currentuser=UserEntity.getName();
 	    String msg=UserEntity.replygrp(msgbody,convname,currentuser);
@@ -285,7 +287,7 @@ public class Service {
 
 	@POST
 	@Path("/ShownotifService")
-	public String ShownotifService() {
+	public String shownotifService() {
 		JSONObject object = new JSONObject();
         String currentuser=UserEntity.getName();
 		Map <String,Vector> notif = new HashMap<String,Vector>();
@@ -316,7 +318,7 @@ public class Service {
 	
 	@POST
 	@Path("/SendMsgService")
-	public String SendMsgService(@FormParam("userto") String userto,@FormParam("userfrom") String userfrom,@FormParam("msgbody") String msgbody) {
+	public String sendMsgService(@FormParam("userto") String userto,@FormParam("userfrom") String userfrom,@FormParam("msgbody") String msgbody) {
 		JSONObject object = new JSONObject();
 		String user = UserEntity.sendMsg(userfrom, userto,msgbody);
        if(user.equals("ok"))
@@ -358,7 +360,7 @@ public class Service {
 	public String pagecreationservice(@FormParam("pname") String pname,
 			@FormParam("ptype") String ptype, @FormParam("pcategory") String pcategory) {
 		String pcreator=UserEntity.getName();
-		String user =UserEntity.savePage(pname,ptype,pcategory,pcreator);
+		String user =PageEntity.savePage(pname,ptype,pcategory,pcreator);
 		JSONObject object = new JSONObject();
 		object.put("Status", "OK");
 		return object.toString();
@@ -366,11 +368,11 @@ public class Service {
 	
 	@POST
 	@Path("/ViewePagesService")
-	public String ViewePagesService() {
+	public String viewePagesService() {
 		JSONObject object = new JSONObject();
 
 	    String currentuser=UserEntity.getName();
-		List page = UserEntity.viewpage(currentuser);
+		List page = PageEntity.viewpage(currentuser);
        if(page.equals(null)){object.put("Status", "Failed");}
        else{
     	   for(int i=0;i<page.size();i++){
@@ -382,11 +384,11 @@ public class Service {
 	
 	@POST
 	@Path("/VieweMyPagesService")
-	public String VieweMyPagesService() {
+	public String vieweMyPagesService() {
 		JSONObject object = new JSONObject();
 
 	    String currentuser=UserEntity.getName();
-		List page = UserEntity.viewmypages(currentuser);
+		List page = PageEntity.viewmypages(currentuser);
        if(page.equals(null)){object.put("Status", "Failed");}
        else{
     	   for(int i=0;i<page.size();i++){
@@ -398,9 +400,9 @@ public class Service {
 	
 	@POST
 	@Path("/HandlePageService")
-	public String HandlePageService(@FormParam("pagename") String pagename) {
+	public String handlePageService(@FormParam("pagename") String pagename) {
 		JSONObject object = new JSONObject();
-		List posts = UserEntity.handlemypage(pagename);
+		List posts = PageEntity.handlemypage(pagename);
         object.put("name", posts.get(0));
         object.put("likes", posts.get(1));
    	   for(int i=2;i<posts.size();i++){
@@ -412,10 +414,10 @@ public class Service {
 	
 	@POST
 	@Path("/OpenPageService")
-	public String OpenPageService(@FormParam("pagename") String pagename) {
+	public String openPageService(@FormParam("pagename") String pagename) {
 		JSONObject object = new JSONObject();
 		String user=UserEntity.getName();
-		List posts = UserEntity.openpage(pagename, user);
+		List posts = PageEntity.openpage(pagename, user);
         object.put("name", posts.get(0));
    	   for(int i=1;i<posts.size();i++){
       object.put("post"+i, posts.get(i));}
@@ -424,19 +426,19 @@ public class Service {
 		return object.toString();}
 	@POST
 	@Path("/SavePostService")
-	public String SavePostService(@FormParam("pname") String pname,@FormParam("pagepost") String pagepost,@FormParam("privacy")String privacy) {
+	public String savePostService(@FormParam("pname") String pname,@FormParam("pagepost") String pagepost,@FormParam("privacy")String privacy) {
 		String pcreator=UserEntity.getName();
-		String user =UserEntity.savepost(pname,pagepost,pcreator,privacy);
+		String user =PostEntity.savepost(pname,pagepost,pcreator,privacy);
 		JSONObject object = new JSONObject();
 		object.put("Status", "OK");
 		return object.toString();
 	}
 	@POST
 	@Path("/LikePageService")
-	public String LikePageService() {
+	public String likePageService() {
 		String currentuser=UserEntity.getName();
 		String Pagename=UserEntity.getpname();
-		String like =UserEntity.likepage(currentuser,Pagename);
+		String like =PageEntity.likepage(currentuser,Pagename);
 		JSONObject object = new JSONObject();
 		object.put("Status", "OK");
 		return object.toString();
@@ -444,9 +446,9 @@ public class Service {
 
 	@POST
 	@Path("/HashtagService")
-	public String 	HashtagService(@FormParam("name") String name) {
+	public String 	hashtagService(@FormParam("name") String name) {
 		JSONObject object = new JSONObject();
-		List posts = UserEntity.viewhashtag(name);
+		List posts = PostEntity.viewhashtag(name);
         object.put("name", posts.get(0));
         object.put("nop", posts.get(1));
    	  for(int i=2;i<posts.size();i++){
@@ -457,7 +459,7 @@ public class Service {
 
 	@POST
 	@Path("/ViewTimeLineService")
-	public String ViewTimeLineService(@FormParam("name") String name) {
+	public String viewTimeLineService(@FormParam("name") String name) {
 		JSONObject object = new JSONObject();
 		String uname=UserEntity.getName();
 		List posts = UserEntity.vietimeline(name,uname);
@@ -470,9 +472,9 @@ public class Service {
 	
 	@POST
 	@Path("/SaveUserPostService")
-	public String SaveUserPostService(@FormParam("pagepost") String pagepost,@FormParam("privacy") String privacy,@FormParam("user") String user,@FormParam("feeling") String feeling,@FormParam("custom") String custom) {
+	public String saveUserPostService(@FormParam("pagepost") String pagepost,@FormParam("privacy") String privacy,@FormParam("user") String user,@FormParam("feeling") String feeling,@FormParam("custom") String custom) {
 		String pcreator=UserEntity.getName();
-		String post =UserEntity.saveuserpost(pcreator,pagepost,privacy,user,feeling,custom);
+		String post =PostEntity.saveuserpost(pcreator,pagepost,privacy,user,feeling,custom);
 		JSONObject object = new JSONObject();
 		object.put("Status", "OK");
 		return object.toString();
@@ -481,18 +483,18 @@ public class Service {
 	
 	@POST
 	@Path("/LikeUserPostService")
-	public String LikeUserPostService(@FormParam("post") String post,@FormParam("timeline") String timeline) {
+	public String likeUserPostService(@FormParam("post") String post,@FormParam("timeline") String timeline) {
 		String currentuser=UserEntity.getName();
-		String like =UserEntity.likeuserpost(post,timeline);
+		String like =PostEntity.likeuserpost(post,timeline);
 		JSONObject object = new JSONObject();
 		object.put("Status", "OK");
 		return object.toString();
 	}
 	@POST
 	@Path("/LikePagePostService")
-	public String LikePagePostService(@FormParam("post") String post,@FormParam("timeline") String timeline) {
+	public String likePagePostService(@FormParam("post") String post,@FormParam("timeline") String timeline) {
 		String currentuser=UserEntity.getName();
-		String like =UserEntity.likepagepost(post,timeline);
+		String like =PageEntity.likepagepost(post,timeline);
 		JSONObject object = new JSONObject();
 		object.put("Status", "OK");
 		return object.toString();
@@ -500,12 +502,15 @@ public class Service {
 
 	@POST
 	@Path("/ShareUserPostService")
-	public String ShareUserPostService(@FormParam("post") String post,@FormParam("creator") String creator,@FormParam("hashtag") String hashtag,@FormParam("feeling") String feeling) {
+	public String shareUserPostService(@FormParam("post") String post,@FormParam("creator") String creator,@FormParam("hashtag") String hashtag,@FormParam("feeling") String feeling) {
 		String currentuser=UserEntity.getName();
-		String post1 =UserEntity.shareuserpost(post,creator,currentuser,hashtag,feeling);
+		String post1 =PostEntity.shareuserpost(post,creator,currentuser,hashtag,feeling);
 		JSONObject object = new JSONObject();
 		object.put("Status", "OK");
 		return object.toString();
 	}
 
 
+
+
+}
